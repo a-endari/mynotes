@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginVeiw extends StatefulWidget {
   const LoginVeiw({super.key});
@@ -74,19 +75,23 @@ class _LoginVeiwState extends State<LoginVeiw> {
               final email = _email.text;
               final password = _password.text;
               try {
-                UserCredential test =
+                devtools.log(
+                    "befor log in ${FirebaseAuth.instance.currentUser.toString()}");
+                UserCredential currentUser =
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
-                print(test);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil("/notes/", (route) => false);
+                devtools.log(currentUser.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
-                  print("User Not Found"); //make an popup
+                  devtools.log("User Not Found.");
                 } else if (e.code == "wrong-password") {
-                  print("Wrong Password");
-
-                  print(e.code);
+                  devtools.log("Wrong Password");
+                } else {
+                  devtools.log(e.code);
                 }
               }
             },
