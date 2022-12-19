@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:mynotes/constants/routes.dart';
+
 class LoginVeiw extends StatefulWidget {
   const LoginVeiw({super.key});
 
@@ -83,7 +85,7 @@ class _LoginVeiwState extends State<LoginVeiw> {
                   password: password,
                 );
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil("/notes/", (route) => false);
+                    .pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 devtools.log(currentUser.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
@@ -100,7 +102,7 @@ class _LoginVeiwState extends State<LoginVeiw> {
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/register/', (route) => false);
+                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text("Not registered yet? Register Here!"))
         ],
