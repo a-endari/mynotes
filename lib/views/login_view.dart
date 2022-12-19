@@ -4,6 +4,8 @@ import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
 
+import '../utilities/show_error_dialog.dart';
+
 class LoginVeiw extends StatefulWidget {
   const LoginVeiw({super.key});
 
@@ -89,12 +91,26 @@ class _LoginVeiwState extends State<LoginVeiw> {
                 devtools.log(currentUser.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
+                  await showErrorDialog(
+                    context,
+                    "This Email does not exist in our database. ",
+                  );
                   devtools.log("User Not Found.");
                 } else if (e.code == "wrong-password") {
+                  await showErrorDialog(
+                    context,
+                    "You have entered a wrong password, Try again.",
+                  );
                   devtools.log("Wrong Password");
                 } else {
                   devtools.log(e.code);
+                  await showErrorDialog(
+                    context,
+                    e.code.toString(),
+                  );
                 }
+              } catch (e) {
+                showErrorDialog(context, e.toString());
               }
             },
             child: const Center(child: Text("Login")),
@@ -110,3 +126,5 @@ class _LoginVeiwState extends State<LoginVeiw> {
     );
   }
 }
+
+
