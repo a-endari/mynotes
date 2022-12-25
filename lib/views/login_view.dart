@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
+import 'dart:developer' as devtools show log;
 
 import '../utilities/show_error_dialog.dart';
 
@@ -86,8 +85,17 @@ class _LoginVeiwState extends State<LoginVeiw> {
                   email: email,
                   password: password,
                 );
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  if (!mounted) return;
+
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                } else {
+                  if (!mounted) return;
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      verifiedEmailRoute, (route) => false);
+                }
                 devtools.log(currentUser.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
@@ -110,7 +118,7 @@ class _LoginVeiwState extends State<LoginVeiw> {
                   );
                 }
               } catch (e) {
-                showErrorDialog(context, e.toString());
+                await showErrorDialog(context, e.toString());
               }
             },
             child: const Center(child: Text("Login")),
@@ -126,5 +134,3 @@ class _LoginVeiwState extends State<LoginVeiw> {
     );
   }
 }
-
-

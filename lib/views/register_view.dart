@@ -83,23 +83,43 @@ class _RegisterViewState extends State<RegisterView> {
                   email: email,
                   password: password,
                 );
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    verifiedEmailRoute, (route) => false);
+                final user = FirebaseAuth.instance.currentUser;
+                await user?.sendEmailVerification();
+                if (!mounted) return;
+                Navigator.of(context).pushNamed(verifiedEmailRoute);
               } on FirebaseAuthException catch (e) {
                 if (e.code == "weak-password") {
+                  await showErrorDialog(
+                    context,
+                    "Weak Password",
+                  );
                   devtools.log("Weak Password");
                 } else if (e.code == "email-already-in-use") {
-                  showErrorDialog(context, "Email is already in use");
+                  await showErrorDialog(
+                    context,
+                    "Email is already in use",
+                  );
                   devtools.log(
-                      "Email is already in use"); //TODO:show something to user.
+                    "Email is already in use",
+                  );
                 } else if (e.code == "invalid-email") {
-                  showErrorDialog(context, "Email is an invalid-email.");
-                  devtools.log(
-                      "Email is an invalid-email."); //TODO:show something to user.
+                  await showErrorDialog(
+                    context,
+                    "Email is an invalid-email.",
+                  );
+                  devtools.log("Email is an invalid-email.");
+                } else {
+                  await showErrorDialog(
+                    context,
+                    e.code.toString(),
+                  );
                 }
                 // devtools.log(e.code);
               } catch (e) {
-                showErrorDialog(context, e.toString());
+                await showErrorDialog(
+                  context,
+                  e.toString(),
+                );
               }
             },
             child: const Center(child: Text("Register")),
@@ -111,6 +131,7 @@ class _RegisterViewState extends State<RegisterView> {
             },
             child: const Text("Login Here!"),
           ),
+
         ],
       ),
     );
